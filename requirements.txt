@@ -1,0 +1,3 @@
+opencv-python
+numpy
+matplotlib  # Optional, for visual debugging
