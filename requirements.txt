@@ -1,3 +1,9 @@
+fastapi
+uvicorn
+python-dotenv
 opencv-python
 numpy
-matplotlib  # Optional, for visual debugging
+pillow
+requests
+python-multipart
+beautifulsoup4

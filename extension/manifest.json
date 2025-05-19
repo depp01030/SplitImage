@@ -1,0 +1,8 @@
+{
+  "manifest_version": 3,
+  "name": "圖片一鍵分割過濾",
+  "version": "1.0",
+  "permissions": ["contextMenus", "notifications"],   
+  "host_permissions": ["http://localhost:8888/*"],
+  "background": { "service_worker": "background.js" }
+}
