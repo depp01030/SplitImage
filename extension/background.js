@@ -1,18 +1,19 @@
 chrome.runtime.onInstalled.addListener(() => {
+  // 右鍵選單：針對圖片
   chrome.contextMenus.create({
     id: "split-image-api",
     title: "送到本地分割 API",
     contexts: ["image"]
   });
-});
-// 📌 新增右鍵選單：針對頁面（非圖片）
-chrome.runtime.onInstalled.addListener(() => {
+
+  // 右鍵選單：針對頁面
   chrome.contextMenus.create({
     id: "split-page-url-api",
     title: "送出整頁圖片給後端分析",
     contexts: ["page"]
   });
 });
+
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "split-page-url-api") {
     const pageUrl = tab.url;
