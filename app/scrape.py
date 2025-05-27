@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, unquote
-
+'''
 url = "https://en.love-minuet.com/product/nattie-short-pants-%EC%95%84%EC%9D%B4%EB%B3%B4%EB%A6%AC/17329/category/42/display/1/"
 url = "https://en.love-minuet.com/product/koon-stripe-pants-3color/17339/category/1/display/3/"
- 
+'''
 def get_product_name(url: str) -> str:
 
    # ✅ 拆出 slug 部分（URL path 中的第二段）

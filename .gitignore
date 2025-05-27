@@ -1,6 +1,8 @@
 # 忽略 Python 虛擬環境
 venv/
 .env/
+dist/
+build/
 
 # 忽略 Python 編譯檔
 __pycache__/
