@@ -15,6 +15,7 @@ def get_naver_product_name(url: str) -> str:
     parts = url.strip("/").split("/")
     store = parts[3]         # foldedlinen
     product_id = parts[5]    # 11452355200
+    product_id = product_id.split('?')[0]
     product_name = f"{store}-{product_id}"
     print("商品名稱：", product_name)
     return product_name
