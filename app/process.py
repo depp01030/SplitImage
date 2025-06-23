@@ -2,12 +2,12 @@ import os
 import requests
 import numpy as np
 import cv2
-from app.utils import find_sub_images, save_sub_images
+from app.split_utils import find_sub_images, save_sub_images
 from app.config import config
 from urllib.parse import urlparse, unquote
-from app.utils import is_naver
+from app.split_utils import is_naver
 from app.process_naver import process_naver_page
-from app.process_minute import process_minute_page, process_minute_url
+from app.process_minuet import process_minute_page, process_minute_url
 
 def process_folder(input_dir, output_dir):
     files = [f for f in os.listdir(input_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp'))]

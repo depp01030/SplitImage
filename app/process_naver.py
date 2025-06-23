@@ -5,8 +5,15 @@ from urllib.parse import urljoin, unquote
 from app.config import config
 
 
-
-
+def is_naver(url: str) -> bool:
+    """
+    檢查網址是否為 Naver 網站
+    """
+    keywords = ["naver.com", "blog.naver.com", "post.naver.com", "smartstore.naver"]
+    for keyword in keywords:
+        if keyword in url:
+            return True
+    return False
 def get_naver_product_name(url: str) -> str:
     '''
     url = "https://smartstore.naver.com/foldedlinen/products/11452355200"
@@ -21,8 +28,38 @@ def get_naver_product_name(url: str) -> str:
     return product_name
 
 
+def unpack_naver_data(data):
 
-def process_naver_page(page_url, image_urls):
+    # 正確處理 JSON 格式的資料
+    image_urls = data.get('image_urls', [])
+    page_url = data.get('page_url', '')  # 獲取頁面 URL
+    if not is_naver(page_url):
+        print("Invalid Naver page URL")
+        return {
+            'status': 'error',
+            'message': 'Invalid Naver page URL'
+        }
+    
+    
+    print(f"收到 NAVER 圖片 URL 數量：{len(image_urls)}")
+    return {
+        'status': 'ok',
+        'image_urls': image_urls,
+        'page_url': page_url
+    }
+def process_naver_page(data):
+
+    unpacked_data = unpack_naver_data(data)
+    
+    if unpacked_data['status'] != 'ok':
+        return {
+            'status': 'error',
+            'message': unpacked_data['message']
+        }
+    page_url = unpacked_data['page_url']
+    image_urls = unpacked_data['image_urls']
+    # 使用 process_naver_page 函數處理圖片
+    
     try:
         product_name = get_naver_product_name(page_url) 
         

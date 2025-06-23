@@ -52,14 +52,6 @@ def save_sub_images(sub_imgs, output_dir, prefix="subimg"):
         img_pil = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         filename = f"{prefix}_{idx+1}.jpg"
         img_pil.save(os.path.join(output_dir, filename))
-def is_naver(url: str) -> bool:
-    """
-    檢查網址是否為 Naver 網站
-    """
-    keywords = ["naver.com", "blog.naver.com", "post.naver.com", "smartstore.naver"]
-    for keyword in keywords:
-        if keyword in url:
-            return True
-    return False
+
 
 
