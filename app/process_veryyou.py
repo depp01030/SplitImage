@@ -26,10 +26,9 @@ def get_filename_from_url(url):
     return basename
 
 
-def process_veryyou_url(image_url, output_dir): 
+def process_veryyou_url(image_url):
+    """Download a single image from the given URL and return it as OpenCV image"""
     try:
-        # 從URL獲取文件名作為前綴
-        prefix = os.path.splitext(get_filename_from_url(image_url))[0]
         # 設置HTTP請求頭，模擬瀏覽器請求
         headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
@@ -42,7 +41,8 @@ def process_veryyou_url(image_url, output_dir):
         
         # 檢查響應狀態
         if resp.status_code != 200:
-            return {"status": "error", "message": f"Failed to download image: HTTP {resp.status_code}"}
+            print(f"Failed to download image: HTTP {resp.status_code}")
+            return None
             
         # 將圖片二進制數據轉換為NumPy數組
         img_arr = np.frombuffer(resp.content, np.uint8)
@@ -51,15 +51,13 @@ def process_veryyou_url(image_url, output_dir):
         
         # 檢查圖片是否成功解碼
         if img is None:
-            return {"status": "error", "message": "Failed to decode image"}
+            print("Failed to decode image")
+            return None
             
-        sub_imgs = find_sub_images(img)
-        save_sub_images(sub_imgs, output_dir, prefix=prefix) 
-        
-        return {"status": "ok", "num_sub_images": len(sub_imgs)}
+        return img
     except Exception as e:
         traceback.print_exc()
-        return {"status": "error", "message": str(e)}
+        return None
 
 def process_veryyou_page(url):
     try:
@@ -69,14 +67,41 @@ def process_veryyou_page(url):
         folder_path = os.path.join(config.OUTPUT_DIR, product_name)
         os.makedirs(folder_path, exist_ok=True)
 
-        cnt = 0
+        # 1. 下載所有圖片
+        print(f"Downloading {len(image_urls)} images...")
+        images = []
         for url in image_urls:
-            split_result = process_veryyou_url(url, folder_path)
-            if split_result["status"] == "ok":
-                cnt += split_result["num_sub_images"]
-            else:
-                print(split_result["message"])
-        return {"status": "ok", "num_sub_images": cnt}
+            img = process_veryyou_url(url)
+            if img is not None:
+                images.append(img)
+        
+        if not images:
+            return {"status": "error", "message": "No images were successfully downloaded"}
+        
+        # 2. 將所有圖片垂直拼接成一張長圖
+        print("Concatenating images...")
+        # 計算總高度和最大寬度
+        total_height = sum(img.shape[0] for img in images)
+        max_width = max(img.shape[1] for img in images)
+        
+        # 創建一個空白畫布
+        long_image = np.zeros((total_height, max_width, 3), dtype=np.uint8)
+        
+        # 垂直拼接圖片
+        y_offset = 0
+        for img in images:
+            h, w = img.shape[:2]
+            # 居中放置圖片
+            x_offset = (max_width - w) // 2
+            long_image[y_offset:y_offset+h, x_offset:x_offset+w] = img
+            y_offset += h
+        
+        # 3. 切割拼接後的長圖
+        print("Splitting the concatenated image...")
+        sub_imgs = find_sub_images(long_image)
+        save_sub_images(sub_imgs, folder_path, prefix=product_name)
+        
+        return {"status": "ok", "num_sub_images": len(sub_imgs)}
     except Exception as e:
         traceback.print_exc()
         return {"status": "error", "message": str(e)}
